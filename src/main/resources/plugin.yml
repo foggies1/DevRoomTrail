@@ -1,0 +1,7 @@
+name: ParkourPlugin
+version: '${project.version}'
+main: net.foggies.devroomtrail.ParkourPlugin
+api-version: 1.17
+authors: [ foggies ]
+description: Trail Plugin Run for DevRoom.
+depend: [WorldGuard]
