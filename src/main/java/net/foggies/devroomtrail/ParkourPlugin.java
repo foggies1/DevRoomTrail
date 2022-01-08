@@ -8,6 +8,8 @@ import net.foggies.devroomtrail.impl.events.PlayerMoveListener;
 import net.foggies.devroomtrail.impl.manager.LeaderboardManager;
 import net.foggies.devroomtrail.impl.manager.ParkourManager;
 import net.foggies.devroomtrail.impl.storage.ParkourStorage;
+import net.foggies.devroomtrail.utils.ConfigManager;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -19,11 +21,20 @@ public final class ParkourPlugin extends JavaPlugin {
     private WorldGuard worldGuard;
     private PlayerDatabase playerDatabase;
     private LeaderboardManager leaderboardManager;
+    private ConfigManager configManager;
+    private String mongoURI;
+    private String database;
+    private String collection;
 
     @Override
     public void onEnable() {
 
-        this.playerDatabase = new PlayerDatabase();
+        this.configManager = ConfigManager.getInstance();
+        this.configManager.setPlugin(this);
+
+        loadMongoCredentials();
+
+        this.playerDatabase = new PlayerDatabase(this);
         this.worldGuardPlugin = WorldGuardPlugin.inst();
         this.worldGuard = WorldGuard.getInstance();
 
@@ -32,6 +43,15 @@ public final class ParkourPlugin extends JavaPlugin {
         this.leaderboardManager = new LeaderboardManager(this);
 
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+
+    }
+
+    public void loadMongoCredentials(){
+        FileConfiguration fileConfiguration = this.configManager.getConfig("mongoDB.yml");
+
+        this.mongoURI = fileConfiguration.getString("mongoURI");
+        this.database = fileConfiguration.getString("database_name");
+        this.collection = fileConfiguration.getString("collection_name");
 
     }
 

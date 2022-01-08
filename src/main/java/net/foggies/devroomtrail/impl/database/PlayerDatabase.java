@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 import me.lucko.helper.utils.TimeUtil;
+import net.foggies.devroomtrail.ParkourPlugin;
 import net.foggies.devroomtrail.api.IPlayerDatabase;
 import net.foggies.devroomtrail.impl.obj.LeaderboardPlayer;
 import net.foggies.devroomtrail.impl.obj.ParkourAttempt;
@@ -15,30 +16,32 @@ import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerDatabase implements IPlayerDatabase {
 
+    private ParkourPlugin parkourPlugin;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private MongoCollection<Document> serverCollection;
 
-    public PlayerDatabase() {
+    public PlayerDatabase(ParkourPlugin parkourPlugin) {
+        this.parkourPlugin = parkourPlugin;
         connect();
     }
 
     private void connect() {
-        this.mongoClient = new com.mongodb.MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        this.mongoDatabase = this.mongoClient.getDatabase("parkour");
-        this.serverCollection = this.mongoDatabase.getCollection("players");
+        this.mongoClient = new com.mongodb.MongoClient(new MongoClientURI(parkourPlugin.getMongoURI()));
+        this.mongoDatabase = this.mongoClient.getDatabase(parkourPlugin.getDatabase());
+        this.serverCollection = this.mongoDatabase.getCollection(parkourPlugin.getCollection());
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Connected to MongoDB.");
     }
 
     @Override
     public void storePlayer(ParkourAttempt parkourAttempt) {
+
         if (containPlayer(parkourAttempt.getPlayer().getUniqueId())) {
             updatePlayer(parkourAttempt);
         } else {
@@ -65,8 +68,8 @@ public class PlayerDatabase implements IPlayerDatabase {
     }
 
     @Override
-    public Set<LeaderboardPlayer> getLeaderboard() {
-        Set<LeaderboardPlayer> leaderboardPlayers = new HashSet<>();
+    public LinkedHashSet<LeaderboardPlayer> getLeaderboard() {
+        LinkedHashSet<LeaderboardPlayer> leaderboardPlayers = new LinkedHashSet<>();
         FindIterable<Document> cursor = serverCollection.find().sort(new Document("elapsed_time_seconds", 1)).limit(5);
         for (Document document : cursor) {
             LeaderboardPlayer leaderboardPlayer = new LeaderboardPlayer(

@@ -1,0 +1,3 @@
+mongoURI: "mongodb://localhost:27017"
+database_name: "parkour"
+collection_name: "players"
