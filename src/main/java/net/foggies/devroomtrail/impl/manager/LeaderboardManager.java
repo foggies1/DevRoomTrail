@@ -39,7 +39,7 @@ public class LeaderboardManager {
 
             Set<ProtectedRegion> regions = RegionUtil.getRegions(player, parkourPlugin);
             Optional<ProtectedRegion> protectedRegion = regions.stream()
-                    .filter(region -> region.getId().equalsIgnoreCase("parkour_area")).findFirst();
+                    .filter(region -> region.getId().equalsIgnoreCase("parkour_region")).findFirst();
 
             if(protectedRegion.isEmpty() && getScoreboard(player) != null) {
                 JPerPlayerMethodBasedScoreboard scoreboard = getScoreboard(player);

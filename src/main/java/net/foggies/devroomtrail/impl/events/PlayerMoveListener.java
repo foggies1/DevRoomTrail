@@ -25,7 +25,7 @@ public class PlayerMoveListener implements Listener {
         this.parkourPlugin = parkourPlugin;
         this.parkourArea = parkourPlugin.getParkourStorage().getParkourArea();
         this.startLocation = this.parkourArea.getStartLocation();
-        this.parkourRegion = RegionUtil.getRegion(this.parkourArea.getStartLocation().getWorldName(), "parkour_area", parkourPlugin);
+        this.parkourRegion = RegionUtil.getRegion(this.parkourArea.getStartLocation().getWorldName(), "parkour_region", parkourPlugin);
     }
 
     @EventHandler
